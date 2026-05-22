@@ -1,19 +1,5 @@
 import type { Metadata } from "next";
-import { Fraunces, JetBrains_Mono } from "next/font/google";
 import "./globals.css";
-
-const fraunces = Fraunces({
-  subsets: ["latin"],
-  variable: "--font-fraunces-display",
-  display: "swap",
-  style: ["normal", "italic"],
-});
-
-const jetbrainsMono = JetBrains_Mono({
-  subsets: ["latin"],
-  variable: "--font-jb-mono",
-  display: "swap",
-});
 
 export const metadata: Metadata = {
   title: "Salkkuanalyysi — Niklas Lindahl",
@@ -25,7 +11,15 @@ export default function RootLayout({
   children,
 }: Readonly<{ children: React.ReactNode }>) {
   return (
-    <html lang="fi" className={`${fraunces.variable} ${jetbrainsMono.variable} h-full`}>
+    <html lang="fi" className="h-full">
+      <head>
+        <link rel="preconnect" href="https://fonts.googleapis.com" />
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
+        <link
+          rel="stylesheet"
+          href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,300..700;1,9..144,300..700&family=JetBrains+Mono:wght@400..600&display=swap"
+        />
+      </head>
       <body className="min-h-full bg-paper text-ink antialiased">{children}</body>
     </html>
   );
