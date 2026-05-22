@@ -1,10 +1,32 @@
 import type { RiskProfile as RiskProfileType, RiskLabel } from "@/lib/types";
+import { RiskGlyph } from "@/components/Icons";
 
-const COLORS: Record<RiskLabel, string> = {
-  varovainen: "bg-emerald-500/15 border-emerald-400/40 text-emerald-200",
-  maltillinen: "bg-sky-500/15 border-sky-400/40 text-sky-200",
-  aktiivinen: "bg-amber-500/15 border-amber-400/40 text-amber-200",
-  aggressiivinen: "bg-rose-500/15 border-rose-400/40 text-rose-200",
+type Style = {
+  badge: string;
+  iconColor: string;
+};
+
+const STYLES: Record<RiskLabel, Style> = {
+  varovainen: {
+    badge:
+      "bg-[var(--color-paper)] text-[var(--color-racing)] border-[var(--color-racing)]",
+    iconColor: "var(--color-racing)",
+  },
+  maltillinen: {
+    badge:
+      "bg-[var(--color-paper)] text-[var(--color-ink-2)] border-[var(--color-ink-2)]",
+    iconColor: "var(--color-ink-2)",
+  },
+  aktiivinen: {
+    badge:
+      "bg-[var(--color-paper)] text-[var(--color-goldenrod)] border-[var(--color-goldenrod)]",
+    iconColor: "var(--color-goldenrod)",
+  },
+  aggressiivinen: {
+    badge:
+      "bg-[var(--color-oxblood)] text-[var(--color-paper)] border-[var(--color-oxblood)]",
+    iconColor: "var(--color-paper)",
+  },
 };
 
 function capitalize(s: string) {
@@ -12,20 +34,39 @@ function capitalize(s: string) {
 }
 
 export function RiskProfile({ profile }: { profile: RiskProfileType }) {
+  const style = STYLES[profile.leima] ?? STYLES.maltillinen;
+
   return (
-    <section className="bg-slate-800/50 border border-slate-700 rounded-lg p-5">
-      <h2 className="text-slate-200 font-semibold mb-4 text-xs uppercase tracking-widest">
-        Riskiprofiili
-      </h2>
-      <div className="flex flex-col items-start gap-3">
-        <span
-          className={`inline-block px-4 py-1.5 rounded-full border text-sm font-medium ${
-            COLORS[profile.leima] ?? "bg-slate-700 border-slate-600 text-slate-200"
-          }`}
+    <section aria-labelledby="riski-otsikko">
+      <header className="mb-4">
+        <p className="eyebrow">§ 02</p>
+        <h2
+          id="riski-otsikko"
+          className="font-serif text-[1.75rem] font-semibold tracking-tight text-[var(--color-ink)] mt-1"
         >
-          {capitalize(profile.leima)}
-        </span>
-        <p className="text-slate-300 text-sm leading-relaxed">{profile.perustelu}</p>
+          Riskiprofiili
+        </h2>
+      </header>
+
+      <div className="flex flex-col sm:flex-row gap-6 sm:items-start">
+        <div
+          className={`inline-flex items-center gap-3 border px-4 py-3 ${style.badge}`}
+          style={{ minWidth: "13rem" }}
+        >
+          <span style={{ color: style.iconColor }}>
+            <RiskGlyph level={profile.leima} width={22} height={22} strokeWidth={1.2} />
+          </span>
+          <span className="font-serif text-[1.15rem] font-semibold tracking-tight">
+            {capitalize(profile.leima)}
+          </span>
+        </div>
+
+        <p
+          className="font-serif italic text-[1rem] leading-relaxed text-[var(--color-ink-2)] max-w-[58ch]"
+          style={{ fontWeight: 300 }}
+        >
+          {profile.perustelu}
+        </p>
       </div>
     </section>
   );

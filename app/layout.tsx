@@ -1,18 +1,34 @@
 import type { Metadata } from "next";
+import { Fraunces, JetBrains_Mono } from "next/font/google";
 import "./globals.css";
 
+const fraunces = Fraunces({
+  subsets: ["latin"],
+  variable: "--font-fraunces-display",
+  display: "swap",
+  weight: ["300", "400", "600"],
+  style: ["normal", "italic"],
+});
+
+const jetbrainsMono = JetBrains_Mono({
+  subsets: ["latin"],
+  variable: "--font-jb-mono",
+  display: "swap",
+  weight: ["400", "500"],
+});
+
 export const metadata: Metadata = {
-  title: "Varainhoidon AI-avustaja — salkkuanalyysi",
+  title: "Salkkuanalyysi — Niklas Lindahl",
   description:
-    "Liitä sijoitussalkku ja saa varainhoito-tason analyysi alle minuutissa: allokaatio, hajautusvaroitukset, riskiprofiili ja suositukset.",
+    "Editoriaalinen tekoälypohjainen salkkuanalyysi: allokaatio, hajautusvaroitukset, riskiprofiili ja kolme suositusta.",
 };
 
 export default function RootLayout({
   children,
 }: Readonly<{ children: React.ReactNode }>) {
   return (
-    <html lang="fi" className="h-full">
-      <body className="min-h-full bg-slate-950 text-slate-100 antialiased">{children}</body>
+    <html lang="fi" className={`${fraunces.variable} ${jetbrainsMono.variable} h-full`}>
+      <body className="min-h-full bg-paper text-ink antialiased">{children}</body>
     </html>
   );
 }

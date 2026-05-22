@@ -2,7 +2,7 @@
 
 import type { ApiResponse } from "@/lib/types";
 import { isAnalysisError } from "@/lib/types";
-import { AllocationBars } from "./AllocationBars";
+import { AllocationBreakdown } from "./AllocationBreakdown";
 import { DiversificationWarnings } from "./DiversificationWarnings";
 import { RiskProfile } from "./RiskProfile";
 import { Recommendations } from "./Recommendations";
@@ -14,53 +14,113 @@ type Props = {
   error: string | null;
 };
 
-export function AnalysisReport({ analysis, loading, error }: Props) {
-  if (loading) {
-    return (
-      <section className="bg-slate-800/50 border border-slate-700 rounded-lg p-5 flex items-center justify-center min-h-[400px]">
-        <div className="text-slate-400 text-sm flex items-center gap-3">
-          <span className="w-2 h-2 bg-sky-400 rounded-full animate-pulse" />
-          Analysoidaan salkkua…
+function SkeletonBlock({ height, delay = 0 }: { height: string; delay?: number }) {
+  return (
+    <div
+      className="shimmer w-full border border-[var(--color-rule)]"
+      style={{ height, animationDelay: `${delay}ms` }}
+    />
+  );
+}
+
+function LoadingSkeleton() {
+  return (
+    <div className="space-y-10 crossfade">
+      <div className="space-y-4">
+        <p className="eyebrow">§ 01 — Allokaatio</p>
+        <SkeletonBlock height="3rem" />
+        <div className="space-y-2 pt-2">
+          <SkeletonBlock height="1.5rem" delay={100} />
+          <SkeletonBlock height="1.5rem" delay={200} />
+          <SkeletonBlock height="1.5rem" delay={300} />
+          <SkeletonBlock height="1.5rem" delay={400} />
         </div>
-      </section>
-    );
-  }
+      </div>
+      <div className="space-y-3">
+        <p className="eyebrow">§ 02 — Riskiprofiili</p>
+        <div className="flex gap-6 items-start">
+          <div className="shimmer h-14 w-52 border border-[var(--color-rule)]" />
+          <div className="flex-1 space-y-2">
+            <SkeletonBlock height="0.9rem" delay={200} />
+            <SkeletonBlock height="0.9rem" delay={300} />
+          </div>
+        </div>
+      </div>
+      <div className="space-y-3">
+        <p className="eyebrow">§ 03 — Hajautusvaroitukset</p>
+        <SkeletonBlock height="3.5rem" delay={400} />
+        <SkeletonBlock height="3.5rem" delay={500} />
+      </div>
+      <div className="space-y-3">
+        <p className="eyebrow">§ 04 — Suositukset</p>
+        <SkeletonBlock height="5rem" delay={600} />
+        <SkeletonBlock height="5rem" delay={700} />
+        <SkeletonBlock height="5rem" delay={800} />
+      </div>
+    </div>
+  );
+}
+
+function EmptyState() {
+  return (
+    <div className="border border-dashed border-[var(--color-rule)] p-10 flex flex-col items-start justify-center min-h-[24rem]">
+      <p className="eyebrow mb-3">Odottaa syötettä</p>
+      <p
+        className="font-serif italic text-[1.15rem] text-[var(--color-ink-2)] max-w-[42ch] leading-snug"
+        style={{ fontWeight: 300 }}
+      >
+        Liitä salkku vasemmalle ja paina <span className="not-italic text-[var(--color-oxblood)]">Analysoi salkku</span> —
+        raportti rakentuu tähän kuten päivän pääkirjoitus.
+      </p>
+    </div>
+  );
+}
+
+function ErrorState({ title, body }: { title: string; body: string }) {
+  return (
+    <div className="border border-[var(--color-oxblood)] p-6 bg-[var(--color-paper-2)]">
+      <p className="eyebrow mb-2" style={{ color: "var(--color-oxblood)" }}>
+        {title}
+      </p>
+      <p className="font-serif text-[var(--color-ink-2)] leading-relaxed">{body}</p>
+    </div>
+  );
+}
+
+export function AnalysisReport({ analysis, loading, error }: Props) {
+  if (loading) return <LoadingSkeleton />;
 
   if (error) {
-    return (
-      <section className="bg-slate-800/50 border border-amber-500/40 rounded-lg p-5">
-        <h2 className="text-amber-400 font-semibold mb-2">Verkkovirhe</h2>
-        <p className="text-slate-300 text-sm">{error}</p>
-      </section>
-    );
+    return <ErrorState title="Verkkovirhe" body={error} />;
   }
 
-  if (!analysis) {
-    return (
-      <section className="bg-slate-800/30 border border-dashed border-slate-700 rounded-lg p-5 flex flex-col items-center justify-center min-h-[400px] text-center">
-        <div className="text-slate-500 text-sm max-w-xs">
-          Liitä salkku vasemmalle ja klikkaa &quot;Analysoi salkku&quot; — raportti ilmestyy tähän.
-        </div>
-      </section>
-    );
-  }
+  if (!analysis) return <EmptyState />;
 
   if (isAnalysisError(analysis)) {
-    return (
-      <section className="bg-slate-800/50 border border-amber-500/40 rounded-lg p-5">
-        <h2 className="text-amber-400 font-semibold mb-2">Analyysiä ei voitu tehdä</h2>
-        <p className="text-slate-300 text-sm">{analysis.selitys}</p>
-      </section>
-    );
+    return <ErrorState title="Analyysiä ei voitu tehdä" body={analysis.selitys} />;
   }
 
   return (
-    <div className="space-y-4">
-      <CopyButton analysis={analysis} />
-      <AllocationBars items={analysis.allokaatio} />
-      <DiversificationWarnings items={analysis.hajautusvaroitukset} />
-      <RiskProfile profile={analysis.riskiprofiili} />
-      <Recommendations items={analysis.suositukset} />
+    <div className="space-y-12">
+      <div className="flex justify-end">
+        <CopyButton analysis={analysis} />
+      </div>
+
+      <div className="fade-up" style={{ animationDelay: "0ms" }}>
+        <AllocationBreakdown items={analysis.allokaatio} />
+      </div>
+
+      <div className="fade-up" style={{ animationDelay: "150ms" }}>
+        <RiskProfile profile={analysis.riskiprofiili} />
+      </div>
+
+      <div className="fade-up" style={{ animationDelay: "300ms" }}>
+        <DiversificationWarnings items={analysis.hajautusvaroitukset} />
+      </div>
+
+      <div className="fade-up" style={{ animationDelay: "450ms" }}>
+        <Recommendations items={analysis.suositukset} />
+      </div>
     </div>
   );
 }

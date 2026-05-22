@@ -1,10 +1,5 @@
 import type { DiversificationWarning, WarningType } from "@/lib/types";
-
-const ICONS: Record<WarningType, string> = {
-  yhtio: "■",
-  sektori: "▲",
-  alue: "●",
-};
+import { WarningTypeGlyph } from "@/components/Icons";
 
 const LABELS: Record<WarningType, string> = {
   yhtio: "Yhtiö",
@@ -12,31 +7,74 @@ const LABELS: Record<WarningType, string> = {
   alue: "Alue",
 };
 
+function severityColor(w: DiversificationWarning): string {
+  if (w.tyyppi === "yhtio") {
+    return w.prosentti > 20 ? "var(--color-oxblood)" : "var(--color-goldenrod)";
+  }
+  if (w.tyyppi === "sektori") {
+    return w.prosentti > 55 ? "var(--color-oxblood)" : "var(--color-goldenrod)";
+  }
+  return w.prosentti > 85 ? "var(--color-oxblood)" : "var(--color-goldenrod)";
+}
+
 export function DiversificationWarnings({ items }: { items: DiversificationWarning[] }) {
   return (
-    <section className="bg-slate-800/50 border border-slate-700 rounded-lg p-5">
-      <h2 className="text-slate-200 font-semibold mb-4 text-xs uppercase tracking-widest">
-        Hajautusvaroitukset
-      </h2>
+    <section aria-labelledby="varoitukset-otsikko">
+      <header className="mb-4 flex items-baseline justify-between">
+        <div>
+          <p className="eyebrow">§ 03</p>
+          <h2
+            id="varoitukset-otsikko"
+            className="font-serif text-[1.75rem] font-semibold tracking-tight text-[var(--color-ink)] mt-1"
+          >
+            Hajautusvaroitukset
+          </h2>
+        </div>
+        <span className="tabular text-[0.72rem] text-[var(--color-ink-3)]">
+          {items.length === 0 ? "puhdas" : `${items.length} havainto${items.length === 1 ? "" : "a"}`}
+        </span>
+      </header>
+
       {items.length === 0 ? (
-        <p className="text-slate-400 text-sm">Ei merkittäviä keskittymiä.</p>
+        <p className="font-serif italic text-[var(--color-ink-2)] text-[1rem]" style={{ fontWeight: 300 }}>
+          Ei merkittäviä keskittymiä — hajautus on tasapainossa kynnyslukemilla mitattuna.
+        </p>
       ) : (
-        <ul className="space-y-3">
-          {items.map((w, i) => (
-            <li key={i} className="border-l-2 border-amber-400 pl-3">
-              <div className="flex items-baseline gap-2 flex-wrap">
-                <span className="text-amber-400 text-base leading-none">{ICONS[w.tyyppi]}</span>
-                <span className="text-[11px] uppercase tracking-widest text-slate-400">
-                  {LABELS[w.tyyppi]}
+        <ul className="divide-y divide-[var(--color-rule)] border-t border-b border-[var(--color-rule)]">
+          {items.map((w, i) => {
+            const accent = severityColor(w);
+            return (
+              <li key={i} className="py-4 grid grid-cols-[auto_1fr_auto] gap-x-5 gap-y-1 items-baseline">
+                <span
+                  className="row-span-2 self-start mt-0.5"
+                  style={{ color: accent }}
+                  aria-hidden
+                >
+                  <WarningTypeGlyph type={w.tyyppi} width={18} height={18} />
                 </span>
-                <span className="text-slate-100 font-medium">{w.kohde}</span>
-                <span className="text-amber-300 font-mono tabular-nums ml-auto">
-                  {w.prosentti.toFixed(1)} %
+
+                <div className="flex items-baseline gap-2 flex-wrap">
+                  <span className="eyebrow" style={{ color: "var(--color-ink-3)" }}>
+                    {LABELS[w.tyyppi]}
+                  </span>
+                  <span className="font-serif font-semibold text-[1.05rem] text-[var(--color-ink)]">
+                    {w.kohde}
+                  </span>
+                </div>
+
+                <span
+                  className="tabular text-[1.05rem] font-medium"
+                  style={{ color: accent }}
+                >
+                  {w.prosentti.toFixed(1).replace(".", ",")} %
                 </span>
-              </div>
-              <p className="text-slate-300 text-sm mt-1 leading-relaxed">{w.kuvaus}</p>
-            </li>
-          ))}
+
+                <p className="col-span-2 font-serif text-[0.92rem] leading-relaxed text-[var(--color-ink-2)] max-w-[58ch]">
+                  {w.kuvaus}
+                </p>
+              </li>
+            );
+          })}
         </ul>
       )}
     </section>

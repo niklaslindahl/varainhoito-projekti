@@ -26,6 +26,9 @@ function toMarkdown(a: AnalysisResult): string {
     lines.push(`- **${CATEGORY_LABEL[x.luokka] ?? x.luokka}**: ${x.prosentti.toFixed(1)} %`);
   }
   lines.push("");
+  lines.push("## Riskiprofiili");
+  lines.push(`**${RISK_LABEL[a.riskiprofiili.leima] ?? a.riskiprofiili.leima}** — ${a.riskiprofiili.perustelu}`);
+  lines.push("");
   lines.push("## Hajautusvaroitukset");
   if (a.hajautusvaroitukset.length === 0) {
     lines.push("Ei merkittäviä keskittymiä.");
@@ -34,9 +37,6 @@ function toMarkdown(a: AnalysisResult): string {
       lines.push(`- **${w.kohde}** (${w.tyyppi}, ${w.prosentti.toFixed(1)} %): ${w.kuvaus}`);
     }
   }
-  lines.push("");
-  lines.push("## Riskiprofiili");
-  lines.push(`**${RISK_LABEL[a.riskiprofiili.leima] ?? a.riskiprofiili.leima}** — ${a.riskiprofiili.perustelu}`);
   lines.push("");
   lines.push("## Suositukset");
   a.suositukset.forEach((r, i) => {
@@ -59,14 +59,14 @@ export function CopyButton({ analysis }: { analysis: AnalysisResult }) {
   };
 
   return (
-    <div className="flex justify-end">
-      <button
-        type="button"
-        onClick={copy}
-        className="px-3 py-1.5 border border-slate-700 hover:border-slate-500 hover:bg-slate-800 text-slate-300 rounded-md text-xs transition-colors"
-      >
-        {copied ? "Kopioitu ✓" : "Kopioi raportti"}
-      </button>
-    </div>
+    <button
+      type="button"
+      onClick={copy}
+      className="inline-flex items-center gap-2 px-3 py-1.5 border border-[var(--color-rule)] hover:border-[var(--color-oxblood)] hover:text-[var(--color-oxblood)] text-[var(--color-ink-2)] eyebrow transition-colors"
+      style={{ letterSpacing: "0.18em" }}
+    >
+      <span aria-hidden className="tabular text-[0.65rem]">{copied ? "✓" : "↘"}</span>
+      <span>{copied ? "kopioitu" : "kopioi raportti"}</span>
+    </button>
   );
 }
