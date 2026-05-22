@@ -6,7 +6,6 @@ const fraunces = Fraunces({
   subsets: ["latin"],
   variable: "--font-fraunces-display",
   display: "swap",
-  weight: ["300", "400", "600"],
   style: ["normal", "italic"],
 });
 
@@ -14,7 +13,6 @@ const jetbrainsMono = JetBrains_Mono({
   subsets: ["latin"],
   variable: "--font-jb-mono",
   display: "swap",
-  weight: ["400", "500"],
 });
 
 export const metadata: Metadata = {
