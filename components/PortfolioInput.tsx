@@ -55,6 +55,7 @@ export function PortfolioInput({ value, onChange, onAnalyze, loading }: Props) {
         className="w-full min-h-[18rem] flex-1 bg-[var(--color-paper-2)] border border-[var(--color-rule)] rounded-none p-4 text-[var(--color-ink)] tabular text-[0.92rem] leading-relaxed placeholder:text-[var(--color-ink-3)] focus:outline-none focus:border-[var(--color-oxblood)] focus:bg-[var(--color-paper)] resize-none transition-colors"
         disabled={loading}
         spellCheck={false}
+        maxLength={8000}
       />
 
       <div className="flex flex-wrap items-center gap-3 mt-5">
